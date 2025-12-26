@@ -55,13 +55,10 @@ def test_sauce_demo_purchase():
         total_text = total_element.text
         
         total_amount = total_text.split("$")[1]
-        print(f"✅ Итоговая сумма: ${total_amount}")
         
         assert total_amount == "58.29", (
             f"Итоговая сумма должна быть $58.29, но получено ${total_amount}"
         )
-        
-        print("✅ Итоговая сумма верна: $58.29")
         
     except Exception as e:
     

@@ -18,7 +18,6 @@ def test_slow_calculator():
         delay_input = driver.find_element(By.ID, "delay")
         delay_input.clear()
         delay_input.send_keys("45")
-        print("✅ Задержка установлена: 45 секунд")
 
         driver.find_element(By.XPATH, "//span[text()='7']").click()
         driver.find_element(By.XPATH, "//span[text()='+']").click()
@@ -33,13 +32,10 @@ def test_slow_calculator():
         )
 
         final_result = result_element.text
-        print(f"✅ Получен результат: {final_result}")
 
         assert final_result == "15", (
             f"Ожидался результат '15', но получено '{final_result}'"
         )
-        
-        print("✅ Тест пройден успешно! Результат 15 отобразился через 45 секунд")
         
     except Exception as e:
         driver.save_screenshot("calculator_error.png")

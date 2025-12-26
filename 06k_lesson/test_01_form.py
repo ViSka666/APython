@@ -68,8 +68,6 @@ def test_form_validation():
                 f"Поле {field_id} не должно содержать 'N/A'. "
                 f"Текущий текст: {field_element.text}"
             )
-            
-        print("✅ Все проверки пройдены успешно!")
         
     except Exception as e:
         driver.save_screenshot("error_screenshot.png")

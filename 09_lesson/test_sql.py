@@ -13,150 +13,146 @@ subject_id = 26
 @pytest.mark.insert_test
 def test_add_user():
     db = create_engine(db_connection_string)
-    connection = db.connect()
+    with db.connect() as connection:
 
-    connection.execute(
-        text("DELETE FROM users WHERE user_id = :user_id"),
-        {"user_id": user_id}
-    )
+        connection.execute(
+            text("DELETE FROM users WHERE user_id = :user_id"),
+            {"user_id": user_id}
+        )
+        connection.commit()
+
+        insert_sql = text("""
+                          INSERT INTO users (user_id, user_email, subject_id)
+                          VALUES (:user_id, :email, :subject_id)
+        """)
+
+        connection.execute(insert_sql, {
+            "user_id": user_id,
+            "email": email,
+            "subject_id": subject_id
+        })
+
+        connection.commit()
+
+        result = connection.execute(
+            text("SELECT user_email FROM users WHERE user_id = :user_id"),
+            {"user_id": user_id}
+        )
+        user = result.fetchone()
+
+        assert user is not None
+        assert user[0] == email
+
+        connection.execute(
+            text("DELETE FROM users WHERE user_id = :user_id"),
+            {"user_id": user_id}
+        )
+
     connection.commit()
-
-    insert_sql = text("""
-        INSERT INTO users (user_id, user_email, subject_id)
-        VALUES (:user_id, :email, :subject_id)
-    """)
-
-    connection.execute(insert_sql, {
-        "user_id": user_id,
-        "email": email,
-        "subject_id": subject_id
-    })
-
-    connection.commit()
-
-    result = connection.execute(
-        text("SELECT user_email FROM users WHERE user_id = :user_id"),
-        {"user_id": user_id}
-    )
-    user = result.fetchone()
-
-    assert user is not None
-    assert user[0] == email
-
-    connection.execute(
-        text("DELETE FROM users WHERE user_id = :user_id"),
-        {"user_id": user_id}
-    )
-
-    connection.commit()
-    connection.close()
 
 
 @pytest.mark.update_test
 def test_update_user():
     db = create_engine(db_connection_string)
-    connection = db.connect()
+    with db.connect() as connection:
 
-    connection.execute(
-        text("DELETE FROM users WHERE user_id = :user_id"),
-        {"user_id": user_id}
-    )
-    connection.commit()
+        connection.execute(
+            text("DELETE FROM users WHERE user_id = :user_id"),
+            {"user_id": user_id}
+        )
+        connection.commit()
 
-    insert_sql = text("""
-                      INSERT INTO users (user_id, user_email, subject_id)
-                      VALUES (:user_id, :email, :subject_id)
-    """)
+        insert_sql = text("""
+                          INSERT INTO users (user_id, user_email, subject_id)
+                          VALUES (:user_id, :email, :subject_id)
+        """)
 
-    connection.execute(insert_sql, {
-        "user_id": user_id,
-        "email": email,
-        "subject_id": subject_id
-    })
+        connection.execute(insert_sql, {
+            "user_id": user_id,
+            "email": email,
+            "subject_id": subject_id
+        })
 
-    connection.commit()
+        connection.commit()
 
-    update_sql = text("""
-                      UPDATE users SET user_email = :email
-                      WHERE user_id = :user_id
-                      AND subject_id = :subject_id
-    """)
+        update_sql = text("""
+                          UPDATE users SET user_email = :email
+                          WHERE user_id = :user_id
+                          AND subject_id = :subject_id
+        """)
 
-    connection.execute(update_sql, {
-        "user_id": user_id,
-        "email": new_email,
-        "subject_id": subject_id
-    })
+        connection.execute(update_sql, {
+            "user_id": user_id,
+            "email": new_email,
+            "subject_id": subject_id
+        })
 
-    connection.commit()
+        connection.commit()
 
-    result = connection.execute(
-        text("SELECT user_email FROM users WHERE user_id = :user_id"),
-        {"user_id": user_id}
-    )
-    user = result.fetchone()
+        result = connection.execute(
+            text("SELECT user_email FROM users WHERE user_id = :user_id"),
+            {"user_id": user_id}
+        )
+        user = result.fetchone()
 
-    assert user is not None
-    assert user[0] == new_email
+        assert user is not None
+        assert user[0] == new_email
 
-    connection.execute(
-        text("DELETE FROM users WHERE user_id = :user_id"),
-        {"user_id": user_id}
-    )
+        connection.execute(
+            text("DELETE FROM users WHERE user_id = :user_id"),
+            {"user_id": user_id}
+        )
 
-    connection.commit()
-    connection.close()
+        connection.commit()
 
 
 @pytest.mark.delete_test
 def test_delete_user():
     db = create_engine(db_connection_string)
-    connection = db.connect()
+    with db.connect() as connection:
 
-    connection.execute(
-        text("DELETE FROM users WHERE user_id = :user_id"),
-        {"user_id": user_id}
-    )
-    connection.commit()
+        connection.execute(
+            text("DELETE FROM users WHERE user_id = :user_id"),
+            {"user_id": user_id}
+        )
+        connection.commit()
 
-    insert_sql = text("""
-                      INSERT INTO users (user_id, user_email, subject_id)
-                      VALUES (:user_id, :email, :subject_id)
-    """)
+        insert_sql = text("""
+                          INSERT INTO users (user_id, user_email, subject_id)
+                          VALUES (:user_id, :email, :subject_id)
+        """)
 
-    connection.execute(insert_sql, {
-        "user_id": user_id,
-        "email": email,
-        "subject_id": subject_id
-    })
+        connection.execute(insert_sql, {
+            "user_id": user_id,
+            "email": email,
+            "subject_id": subject_id
+        })
 
-    connection.commit()
+        connection.commit()
 
-    result = connection.execute(
-        text("SELECT COUNT(*) FROM users WHERE user_id = :user_id"),
-        {"user_id": user_id}
-    )
-    count_before = result.scalar()
-    assert count_before == 1
+        result = connection.execute(
+            text("SELECT COUNT(*) FROM users WHERE user_id = :user_id"),
+            {"user_id": user_id}
+        )
+        count_before = result.scalar()
+        assert count_before == 1
 
-    delete_sql = text("""
-                      DELETE FROM users
-                      WHERE user_id = :user_id AND subject_id = :subject_id
-    """)
+        delete_sql = text("""
+                          DELETE FROM users
+                          WHERE user_id = :user_id AND subject_id = :subject_id
+        """)
 
-    connection.execute(delete_sql, {
-        "user_id": user_id,
-        "subject_id": subject_id
-    })
+        connection.execute(delete_sql, {
+            "user_id": user_id,
+            "subject_id": subject_id
+        })
 
-    connection.commit()
+        connection.commit()
 
-    result = connection.execute(
-        text("SELECT COUNT(*) FROM users WHERE user_id = :user_id"),
-        {"user_id": user_id}
-    )
-    count_after = result.scalar()
+        result = connection.execute(
+            text("SELECT COUNT(*) FROM users WHERE user_id = :user_id"),
+            {"user_id": user_id}
+        )
+        count_after = result.scalar()
 
-    assert count_after == 0
-
-    connection.close()
+        assert count_after == 0
